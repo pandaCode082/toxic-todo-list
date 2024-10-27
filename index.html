@@ -2978,7 +2978,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
                 } else if (event.target.tagName == "path") {
                     todoChangeStatus(event.target.parentElement.parentElement.dataset.id);
                 } else {
-                    todoChangeStatus(event.target.parentElement.parentElement.dataset.id);
+                    todoChangeStatus(event.target.dataset.id);
                 }
 
                 addToLocalStorage(todos);
