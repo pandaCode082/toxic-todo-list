@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- ----------------------------- title ----------------------------- -->
-    <title>لیست کارای تو</title>
+    <title>لیست کارای غزل</title>
     <!-- ----------------------------- links ----------------------------- -->
     <style>
         /*
@@ -2798,6 +2798,11 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
                 width: 98svw;
             }
         }
+
+        li:has(.active-todo) {
+            text-decoration: line-through;
+            color: #0005;
+        }
     </style>
 </head>
 
@@ -2816,7 +2821,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
 
     <div class="responsive w-[500px] h-max bg-gray-200 p-6 shadow-xl shadow-black/30 rounded-lg flex flex-col gap-4">
         <div>
-            <h1 class="text-4xl capitalize font-bold" style="text-align: right;margin-bottom: 10px;">لیست کارای تو</h1>
+            <h1 class="text-4xl capitalize font-bold" style="text-align: right;margin-bottom: 10px;">لیست کارای غزل</h1>
         </div>
         <!-- -------------------- input box -------------------- -->
         <div class="flex gap-2">
@@ -2890,6 +2895,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
                 const todoObj = {
                     id: crypto.randomUUID(),
                     title: todoValue,
+                    isComplet: false,
                 };
                 // create todo list for local storage;
                 todos.push(todoObj);
@@ -2922,9 +2928,19 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
                 todoWrapper.innerHTML = "";
                 todos.forEach((todo) => {
                     todoWrapper.insertAdjacentHTML("beforeend", `
-                                                    <li data-id="${todo.id}"
-                                                    class="active w-full h-max capitalize flex items-center gap-2 group rounded-lg overflow-hidden bg-gray-300 pl-3 font-medium">
-                                                        <span class="w-full text-lg">${todo.title}</span>
+                                                    <li data-id="${todo.id}" title=${todo.title}
+                                                    class="active w-full h-max capitalize flex items-center group rounded-lg overflow-hidden bg-gray-300 pl-3 font-medium">
+                                                        <span class="w-full text-lg" style="margin-right:8px;overflow:hidden;-webkit-line-clamp: 1;display:-webkit-box;  -webkit-box-orient: vertical;">${todo.title}</span>
+                                                        <button
+                                                        data-id="${todo.id}"
+                                                        onclick="activeTodo(event)"
+                                                            class="${todo.isComplet ? "active-todo" : ""} w-14 translate-x-24 group-hover:translate-x-0 h-12 grid place-content-center text-white overflow-hidden transition duration-300"
+                                                            style="background-color:#13a354;"
+                                                            >
+                                                            
+                                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                                                        </button>
+
                                                         <button onclick="removeTodoHandler(event)"
                                                             class="w-14 translate-x-24 group-hover:translate-x-0 h-12 grid place-content-center bg-red-700 hover:bg-red-800 text-white overflow-hidden transition duration-300">
                                                             <svg class="w-6 h-6 pointer-events-none">
@@ -2948,7 +2964,26 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
             // local storage handlers function;
             addToLocalStorage = (TodoList) => {
                 localStorage.setItem("Todos", JSON.stringify(TodoList));
-            };
+            },
+            // activeTodo handler
+            todoChangeStatus = (todoID) => {
+                let thisTodo = todos.find(todo => {
+                    return todo.id == todoID;
+                })
+                thisTodo.isComplet = thisTodo.isComplet ? false : true;
+            },
+            activeTodo = (event, todoID) => {
+                if (event.target.tagName == "svg") {
+                    todoChangeStatus(event.target.parentElement.dataset.id);
+                } else if (event.target.tagName == "path") {
+                    todoChangeStatus(event.target.parentElement.parentElement.dataset.id);
+                } else {
+                    todoChangeStatus(event.target.parentElement.parentElement.dataset.id);
+                }
+
+                addToLocalStorage(todos);
+                addTodoHandler();
+            }
         // -------------------------- event listeners -------------------------- //
         // --------------------------------------------------------------------- //
         // ==--==--==--==--==--==--==-- add todo ==--==--==--==--==--==--==-- //
